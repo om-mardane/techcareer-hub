@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import EarthAnimation from "@/components/EarthAnimation";
 import { useRouter } from "next/navigation";
@@ -56,7 +56,9 @@ export default function AuthPage() {
       {/* 3D Background - Shifted to the left half */}
       <div className="absolute inset-0 z-0 hidden lg:block lg:w-[60%] pointer-events-none">
         <Canvas camera={{ position: [0, 0, 7] }}>
-          <EarthAnimation />
+          <Suspense fallback={null}>
+            <EarthAnimation />
+          </Suspense>
         </Canvas>
       </div>
 
