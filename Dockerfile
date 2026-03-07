@@ -21,6 +21,10 @@ RUN npx prisma generate
 # Build Next.js application
 RUN npm run build
 
+# Set environment variables for Render
+ENV DATABASE_URL="file:./dev.db"
+ENV JWT_SECRET="this_is_a_very_secure_secret_for_production"
+
 # Expose the port the app runs on
 EXPOSE 3000
 
