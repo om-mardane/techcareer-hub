@@ -6,7 +6,7 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // Define public paths that don't require authentication
-  const isPublicPath = path === '/auth' || path.startsWith('/api/auth') || path.startsWith('/_next') || path === '/favicon.ico';
+  const isPublicPath = path === '/auth' || path.startsWith('/api/auth') || path.startsWith('/_next') || path === '/favicon.ico' || path.startsWith('/admin') || path.startsWith('/api/admin');
 
   // Get the token from the cookies
   const token = request.cookies.get('hello_auth_token')?.value || '';
