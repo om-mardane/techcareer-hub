@@ -6,7 +6,7 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // Define public paths that don't require authentication
-  const isPublicPath = path === '/auth' || path.startsWith('/api/auth') || path.startsWith('/_next') || path === '/favicon.ico' || path.startsWith('/admin') || path.startsWith('/api/admin');
+  const isPublicPath = path === '/auth' || path.startsWith('/api/auth') || path.startsWith('/_next') || path === '/favicon.ico' || path.startsWith('/admin') || path.startsWith('/api/admin') || path.startsWith('/textures');
 
   // Get the token from the cookies
   const token = request.cookies.get('hello_auth_token')?.value || '';
@@ -46,7 +46,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - textures (public 3D assets)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|textures).*)',
   ],
 };
