@@ -70,6 +70,23 @@ export default function AuthPage() {
           transition={{ duration: 0.5 }}
           className="w-full max-w-md p-8 backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-[0_0_40px_rgba(30,64,175,0.3)] text-white"
         >
+          <div className="flex bg-white/5 rounded-2xl p-1 mb-8 border border-white/10">
+            <button
+              type="button"
+              onClick={(e) => { e.preventDefault(); setIsLogin(true); setError(""); }}
+              className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all ${isLogin ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+            >
+              Already User
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.preventDefault(); setIsLogin(false); setError(""); }}
+              className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all ${!isLogin ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+            >
+              New User
+            </button>
+          </div>
+
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
               {isLogin ? "Welcome Back" : "Join the Journey"}
@@ -166,17 +183,7 @@ export default function AuthPage() {
             </button>
           </form>
 
-          <div className="mt-8 text-center">
-            <button
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError("");
-              }}
-              className="text-gray-400 hover:text-white transition-colors text-sm"
-            >
-              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Log in"}
-            </button>
-          </div>
+
         </motion.div>
       </div>
     </div>
