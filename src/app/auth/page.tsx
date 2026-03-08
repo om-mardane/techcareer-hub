@@ -1,13 +1,9 @@
 "use client";
 
-import { useState, Suspense } from "react";
-import dynamic from "next/dynamic";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Lock, LogIn, UserPlus } from "lucide-react";
-
-// Completely prevent SSR for the 1MB+ 3D assets to fix the massive hanging/lag issues
-const EarthBackground = dynamic(() => import("@/components/EarthBackground"), { ssr: false });
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -55,9 +51,11 @@ export default function AuthPage() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-[#050510] flex">
-      {/* 3D Background - Shifted to the left half */}
-      <div className="absolute inset-0 z-0 hidden lg:block lg:w-[60%] pointer-events-none">
-        <EarthBackground />
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-600/15 blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-600/15 blur-[120px] animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute top-[30%] left-[20%] w-[30%] h-[30%] rounded-full bg-indigo-500/10 blur-[100px] animate-pulse" style={{ animationDelay: "2s" }} />
       </div>
 
       {/* Overlay Content - Shifted to the right */}
