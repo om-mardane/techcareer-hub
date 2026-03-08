@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { Canvas } from "@react-three/fiber";
-import EarthAnimation from "@/components/EarthAnimation";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Lock, LogIn, UserPlus } from "lucide-react";
+
+// Completely prevent SSR for the 1MB+ 3D assets to fix the massive hanging/lag issues
+const EarthBackground = dynamic(() => import("@/components/EarthBackground"), { ssr: false });
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -55,11 +57,7 @@ export default function AuthPage() {
     <div className="relative w-full h-screen overflow-hidden bg-[#050510] flex">
       {/* 3D Background - Shifted to the left half */}
       <div className="absolute inset-0 z-0 hidden lg:block lg:w-[60%] pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 7] }}>
-          <Suspense fallback={null}>
-            <EarthAnimation />
-          </Suspense>
-        </Canvas>
+        <EarthBackground />
       </div>
 
       {/* Overlay Content - Shifted to the right */}

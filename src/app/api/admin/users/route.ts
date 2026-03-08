@@ -8,6 +8,9 @@ export async function GET() {
         id: true,
         name: true,
         email: true,
+        isOnline: true,
+        lastLoginAt: true,
+        lastLogoutAt: true,
         createdAt: true,
         // intentionally excluding password hash
       },

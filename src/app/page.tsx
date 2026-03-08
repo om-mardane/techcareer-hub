@@ -19,6 +19,17 @@ const iconMap: Record<string, React.ElementType> = {
   Cloud
 };
 
+// Pre-compute stable particle positions (avoids hydration mismatch from Math.random in JSX)
+const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  // Use deterministic values based on index so server + client match
+  xPct: ((i * 47 + 13) % 100),
+  yPct: ((i * 31 + 7) % 100),
+  opacity: 0.3 + (i % 5) * 0.1,
+  duration: 10 + (i % 5) * 4,
+  rise: -80 - (i % 4) * 40,
+}));
+
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [mounted, setMounted] = useState(false);
@@ -42,21 +53,18 @@ export default function Home() {
           {/* Animated background particles (simplified pure CSS representation for now) */}
           {mounted && (
             <div className="absolute inset-0 pointer-events-none opacity-20">
-              {Array.from({ length: 20 }).map((_, i) => (
+              {PARTICLES.map((p) => (
                 <motion.div
-                  key={i}
+                  key={p.id}
                   className="absolute w-2 h-2 rounded-full bg-[var(--primary)]"
-                  initial={{ 
-                    x: Math.random() * window.innerWidth, 
-                    y: Math.random() * window.innerHeight,
-                    opacity: Math.random() * 0.5 + 0.3 
-                  }}
+                  style={{ left: `${p.xPct}%`, top: `${p.yPct}%` }}
+                  initial={{ opacity: p.opacity }}
                   animate={{ 
-                    y: [null, Math.random() * -200],
-                    opacity: [null, 0]
+                    y: [0, p.rise],
+                    opacity: [p.opacity, 0]
                   }}
                   transition={{ 
-                    duration: Math.random() * 10 + 10,
+                    duration: p.duration,
                     repeat: Infinity,
                     ease: "linear"
                   }}

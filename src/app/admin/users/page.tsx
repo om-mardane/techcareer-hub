@@ -2,14 +2,28 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Users, Mail, Clock, Database, ArrowLeft } from "lucide-react";
+import { Users, Mail, Clock, Database, ArrowLeft, Wifi, WifiOff, LogIn, LogOut } from "lucide-react";
 import Link from "next/link";
 
 interface User {
   id: string;
   name: string;
   email: string;
+  isOnline: boolean;
+  lastLoginAt: string | null;
+  lastLogoutAt: string | null;
   createdAt: string;
+}
+
+function formatTime(dateStr: string | null) {
+  if (!dateStr) return "Never";
+  return new Date(dateStr).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 export default function AdminUsersPage() {
@@ -31,6 +45,8 @@ export default function AdminUsersPage() {
       });
   }, []);
 
+  const onlineCount = users.filter((u) => u.isOnline).length;
+
   return (
     <div className="min-h-screen bg-black/95 text-white p-8 font-sans pt-24 relative overflow-hidden">
       {/* Background Decorative Elements */}
@@ -49,7 +65,7 @@ export default function AdminUsersPage() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-12 border-b border-white/10 pb-6"
+          className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12 border-b border-white/10 pb-6 gap-6"
         >
           <div>
             <h1 className="text-4xl font-bold flex items-center tracking-tight mb-2">
@@ -59,11 +75,20 @@ export default function AdminUsersPage() {
             <p className="text-gray-400 pl-12 text-sm">Showing live records from dev.db</p>
           </div>
 
-          <div className="bg-white/5 border border-white/10 px-6 py-4 rounded-xl flex items-center space-x-4 backdrop-blur-md">
-            <Users className="w-6 h-6 text-purple-400" />
-            <div>
-              <p className="text-xs text-gray-400 uppercase tracking-widest font-semibold">Total Users</p>
-              <p className="text-2xl font-bold">{users.length}</p>
+          <div className="flex gap-4">
+            <div className="bg-white/5 border border-white/10 px-6 py-4 rounded-xl flex items-center space-x-4 backdrop-blur-md">
+              <Users className="w-6 h-6 text-purple-400" />
+              <div>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">Total Users</p>
+                <p className="text-2xl font-bold">{users.length}</p>
+              </div>
+            </div>
+            <div className="bg-white/5 border border-emerald-500/20 px-6 py-4 rounded-xl flex items-center space-x-4 backdrop-blur-md">
+              <Wifi className="w-6 h-6 text-emerald-400" />
+              <div>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">Online Now</p>
+                <p className="text-2xl font-bold text-emerald-400">{onlineCount}</p>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -86,14 +111,38 @@ export default function AdminUsersPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 hover:bg-white/[0.05] transition-all hover:border-purple-500/30 group"
+                className={`bg-white/[0.03] border rounded-2xl p-6 hover:bg-white/[0.05] transition-all group ${
+                  user.isOnline
+                    ? "border-emerald-500/30 hover:border-emerald-500/50"
+                    : "border-white/10 hover:border-purple-500/30"
+                }`}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="bg-purple-500/20 text-purple-300 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border border-purple-500/20 group-hover:scale-110 transition-transform">
-                    {user.name.charAt(0).toUpperCase()}
+                  <div className="relative">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border group-hover:scale-110 transition-transform ${
+                      user.isOnline
+                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/20"
+                        : "bg-purple-500/20 text-purple-300 border-purple-500/20"
+                    }`}>
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    {/* Online/Offline indicator dot */}
+                    <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-black ${
+                      user.isOnline ? "bg-emerald-400 animate-pulse" : "bg-gray-500"
+                    }`} />
                   </div>
-                  <span className="text-[10px] text-gray-500 font-mono bg-black/50 px-2 py-1 rounded">
-                    ID: {user.id.slice(0, 8)}...
+
+                  {/* Status Badge */}
+                  <span className={`text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 ${
+                    user.isOnline
+                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+                      : "bg-red-500/10 text-red-400 border border-red-500/20"
+                  }`}>
+                    {user.isOnline ? (
+                      <><Wifi className="w-3 h-3" /> Online</>
+                    ) : (
+                      <><WifiOff className="w-3 h-3" /> Offline</>
+                    )}
                   </span>
                 </div>
                 
@@ -104,15 +153,20 @@ export default function AdminUsersPage() {
                   {user.email}
                 </div>
                 
-                <div className="mt-4 pt-4 border-t border-white/5 flex items-center text-xs text-gray-500">
-                  <Clock className="w-3.5 h-3.5 mr-2 opacity-70" />
-                  Joined {new Date(user.createdAt).toLocaleDateString(undefined, {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
+                {/* Login/Logout timestamps */}
+                <div className="mt-4 pt-4 border-t border-white/5 space-y-2">
+                  <div className="flex items-center text-xs text-gray-500">
+                    <LogIn className="w-3.5 h-3.5 mr-2 text-emerald-500/70" />
+                    <span className="text-gray-400 mr-1">Last Login:</span> {formatTime(user.lastLoginAt)}
+                  </div>
+                  <div className="flex items-center text-xs text-gray-500">
+                    <LogOut className="w-3.5 h-3.5 mr-2 text-red-500/70" />
+                    <span className="text-gray-400 mr-1">Last Logout:</span> {formatTime(user.lastLogoutAt)}
+                  </div>
+                  <div className="flex items-center text-xs text-gray-500 pt-1">
+                    <Clock className="w-3.5 h-3.5 mr-2 opacity-70" />
+                    Joined {formatTime(user.createdAt)}
+                  </div>
                 </div>
               </motion.div>
             ))}

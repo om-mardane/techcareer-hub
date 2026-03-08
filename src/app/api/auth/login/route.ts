@@ -19,6 +19,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
+    // Mark user as online in the database
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { isOnline: true, lastLoginAt: new Date() },
+    });
+
     const secret = new TextEncoder().encode(process.env.JWT_SECRET || "fallback_secret");
     const token = await new SignJWT({ userId: user.id })
       .setProtectedHeader({ alg: "HS256" })
